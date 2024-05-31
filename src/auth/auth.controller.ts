@@ -45,7 +45,12 @@ export class AuthController {
 
     if (userValid) {
       return {
-        access_token: this.jwtService.sign(payload),
+        access_token: this.jwtService.sign(
+          { username: payload.username, id: userValid.id },
+          {
+            secret: '{opVlM~TY!gwq#`',
+          },
+        ),
       };
     } else {
       throw new HttpException('Invalid credientials', HttpStatus.BAD_REQUEST);
