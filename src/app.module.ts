@@ -7,6 +7,8 @@ import { KubernetesService } from './kubernetes/kubernetes.service';
 import { KubernetesModule } from './kubernetes/kubernetes.module';
 import { AuthMiddleware } from './jwt/auth.guard';
 import { JwtModule, JwtService } from '@nestjs/jwt';
+import { AppsModule } from './apps/apps.module';
+import { PrismaService } from './prisma/prisma.service';
 
 @Module({
   imports: [
@@ -21,9 +23,10 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
         };
       },
     }),
+    AppsModule,
   ],
   controllers: [AppController],
-  providers: [AppService, KubernetesService, JwtService],
+  providers: [AppService, KubernetesService, JwtService, PrismaService],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {

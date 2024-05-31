@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
-import { KubernetesController } from './kubernetes.controller';
 import { KubernetesService } from './kubernetes.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Module({
-  controllers: [KubernetesController],
-  providers: [KubernetesService],
+  providers: [KubernetesService, PrismaService],
 })
 export class KubernetesModule {}
