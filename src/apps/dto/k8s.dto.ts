@@ -15,3 +15,14 @@ export class DeployHelmChart {
   @IsString()
   applicationName: string;
 }
+
+export interface PodMetadata {
+  creationTimestamp: Date;
+  generateName: string;
+  labels: Labels;
+}
+
+export interface Labels {
+  app: string;
+  'pod-template-hash': string;
+}

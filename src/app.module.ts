@@ -30,9 +30,15 @@ import { PrismaService } from './prisma/prisma.service';
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).forRoutes({
-      path: 'kubernetes/:namespace',
-      method: RequestMethod.ALL,
-    });
+    consumer.apply(AuthMiddleware).forRoutes(
+      {
+        path: 'apps/:namespace',
+        method: RequestMethod.ALL,
+      },
+      {
+        path: 'apps/deploy',
+        method: RequestMethod.ALL,
+      },
+    );
   }
 }

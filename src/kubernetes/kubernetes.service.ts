@@ -26,10 +26,22 @@ export class KubernetesService {
     }
   }
 
+  async getPodsByNamespace(namespace: string) {
+    try {
+      const res = await this.k8sApi.listNamespacedPod(namespace);
+
+      return res.body.items;
+    } catch (err) {
+      throw new HttpException(err, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   async deployChart(payload: DeployHelmChart) {
     const releaseRepo = `${this.chartName}/nesthelm`;
 
-    // const releaseName = `${Date.now()}-${this.chartName}`;
+    await this.k8sApi.createNamespace({
+      metadata: { name: payload.namespace },
+    });
 
     if (
       shell.exec(`helm repo add ${this.chartName} ${this.chartRepo}`).code !== 0
