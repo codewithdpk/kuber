@@ -9,6 +9,8 @@ import { AuthMiddleware } from './jwt/auth.guard';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { AppsModule } from './apps/apps.module';
 import { PrismaService } from './prisma/prisma.service';
+import { LogIndexingService } from './log-indexing/log-indexing.service';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -24,9 +26,16 @@ import { PrismaService } from './prisma/prisma.service';
       },
     }),
     AppsModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
-  providers: [AppService, KubernetesService, JwtService, PrismaService],
+  providers: [
+    AppService,
+    KubernetesService,
+    JwtService,
+    PrismaService,
+    LogIndexingService,
+  ],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {

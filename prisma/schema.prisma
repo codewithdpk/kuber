@@ -19,6 +19,7 @@ model Apps {
   applicationName String
   healthStatus    String
   deployedAt      DateTime @default(now())
+  pods            String[]
 }
 
 model User {
@@ -27,4 +28,19 @@ model User {
   userEmail    String
   userPassword String
   createdAt    DateTime @default(now())
+}
+
+model Log {
+  id              Int      @id @default(autoincrement())
+  logMessage      String
+  podId           String
+  loggedAt        DateTime
+  createdAt       DateTime @default(now())
+  logType         LogType  @default(Info)
+}
+
+enum LogType {
+  Error
+  Success
+  Info
 }

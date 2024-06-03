@@ -3,6 +3,7 @@ import * as k8s from '@kubernetes/client-node';
 import * as shell from 'shelljs';
 import { DeployHelmChart } from 'src/apps/dto/k8s.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import * as stream from 'stream';
 @Injectable()
 export class KubernetesService {
   private kc: k8s.KubeConfig;
@@ -70,12 +71,43 @@ export class KubernetesService {
       throw new HttpException(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    let pods = [];
+    while (!pods.length) {
+      pods = await this.getPodsByNamespace(payload.namespace);
+    }
+
     return this.prismaService.apps.create({
       data: {
         applicationName: payload.applicationName,
         nameSpace: payload.namespace,
-        healthStatus: 'RUNNING',
+        healthStatus: 'In_Progress',
+        pods: pods.map((pod) => pod.metadata.name),
       },
     });
+  }
+
+  async getLogs(namespace: string, podName: string, containerName: string) {
+    const log = new k8s.Log(this.kc);
+
+    const logStream = new stream.PassThrough();
+    logStream.on('data', (chunk) => {
+      console.log('=====>', chunk.toString());
+    });
+
+    const follow = true;
+    const pretty = false;
+    const sinceSeconds = 60 * 60;
+    const tailLines = 100;
+
+    try {
+      await log.log(namespace, podName, containerName, logStream, {
+        follow,
+        pretty,
+        sinceSeconds,
+        tailLines,
+      });
+    } catch (error) {
+      console.error('Error getting logs:', error);
+    }
   }
 }
